@@ -12,8 +12,19 @@ module.exports = {
       })
       .then((url) => fetch(url, { headers : { 'Content-Type': 'image/jpeg' } }))
       .then((res) =>{
-        console.log(Object.keys(res));
-        callback(null, res.buffer() );
+        console.log(Object.keys(res.body));
+        return new Promise((resolve, reject) =>{
+          var data = '';
+          res.body.on('data', function (dat){
+            data += dat;
+          });
+          res.body.on('end', function(fin){
+            resolve(data);
+          });
+        })
+        .then((image) =>{
+          callback(null, image );
+        });
       });
   }
 }
